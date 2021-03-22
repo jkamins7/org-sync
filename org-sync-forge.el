@@ -106,8 +106,8 @@
      :desc (nth 5 sql-result)
      :milestone (nth 6 sql-result)
      :tags (nth 7 sql-result)
-     :date-creation (nth 8 sql-result)
-     :date-modification (nth 9 sql-result)
+     :date-creation (org-sync-parse-date (nth 8 sql-result))
+     :date-modification (org-sync-parse-date (nth 9 sql-result))
     )
   )
 
