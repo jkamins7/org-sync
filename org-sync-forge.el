@@ -73,7 +73,7 @@
   "Return the buglist pulled from forge's database with entries that have changed since LAST-UPDATE."
   (let* ((updated_recently (when last-update
 			     (format "WHERE isue.updated >= %s" (org-sync-forge-time-to-string last-update))))
-	 (sql_query (concat "SELECT * from issue" updated_recently))
+	 (sql_query (concat (org-sync-forge-sql-query-string) updated_recently))
 	 (sql_results (forge-sql sql_query))
 	 (title "Issues from forge")
 	 )
