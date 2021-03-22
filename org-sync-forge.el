@@ -74,7 +74,7 @@
 	 )
     `(:title ,title
              :url ,org-sync-base-url
-             :bugs ,(mapcar 'org-sync-forge-sql-result-to-bug json)
+             :bugs ,(mapcar 'org-sync-forge-sql-result-to-bug sql_results)
              :since ,last-update))
   )
 
@@ -115,10 +115,10 @@
 ;;	      (org-sync-github-handle-tags b existing-tags)
 ;;	      (org-sync-github-request "PATCH" modif-url data))))
 ;;	   (err (cdr (assoc 'message result))))
-
-      (when (stringp err)
-	(error "Github: %s" err))))
-  )
+;;
+;;      (when (stringp err)
+;;	(error "Github: %s" err))))
+  )))
   )
 
 (provide 'org-sync-forge)
