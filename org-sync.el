@@ -645,7 +645,8 @@ If KEY is already equal to VAL, no change is made."
 (defun org-sync-buglist-dups (buglist)
   "Return non-nil if BUGLIST contains bugs with the same id.
 The value returned is a list of duplicated ids."
-  (let ((hash (make-hash-table))
+
+  (let ((hash (make-hash-table :test `equal))
         (dups))
     (mapc (lambda (x)
             (let ((id (org-sync-get-prop :id x)))
