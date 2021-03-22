@@ -47,7 +47,7 @@
   "Return TIME as a full ISO 8601 date string, but without timezone adjustments (which forge doesn't support"
   (format-time-string "%Y-%m-%dT%TZ" time t))
 
-(defun org-sync-github-base-url (url)
+(defun org-sync-forge-base-url (url)
   "Return base url from given url URL."
   ;; Fix me to actually use a repo name here :
   "forge-database.sql"
@@ -105,20 +105,20 @@
   (dolist (b (org-sync-get-prop :bugs buglist))
     (let* ((sync (org-sync-get-prop :sync b))
 	   (id (org-sync-get-prop :id b))
-	   ; (data (org-sync-github-bug-to-json b))
+	   ; (data (org-sync-forge-bug-to-json b))
 	   ; (modif-url (format "%s/%d" new-url (or id 0)))
 ;;	   (result
 ;;	    (cond
 ;;	     ;; new bug
 ;;	     ((null id)
-;;	      (org-sync-github-handle-tags b existing-tags)
-;;	      (push (org-sync-github-json-to-bug
-;;		     (org-sync-github-request "POST" new-url data)) newbugs))
+;;	      (org-sync-forge-handle-tags b existing-tags)
+;;	      (push (org-sync-forge-json-to-bug
+;;		     (org-sync-forge-request "POST" new-url data)) newbugs))
 ;;
 ;;	     ;; update bug
 ;;	     (t
-;;	      (org-sync-github-handle-tags b existing-tags)
-;;	      (org-sync-github-request "PATCH" modif-url data))))
+;;	      (org-sync-forge-handle-tags b existing-tags)
+;;	      (org-sync-forge-request "PATCH" modif-url data))))
 ;;	   (err (cdr (assoc 'message result))))
 ;;
 ;;      (when (stringp err)
