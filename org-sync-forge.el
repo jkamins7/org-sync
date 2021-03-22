@@ -57,7 +57,7 @@
   "SELECT
      id,
      author,
-     assignee,
+     assignees,
      status,
      title,
      note,
