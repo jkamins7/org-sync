@@ -35,12 +35,17 @@
 
 (require 'cl-lib)
 (require 'org-sync)
+(require 'forge)
 
 (defvar org-sync-forge-backend
   '((base-url      . org-sync-forge-base-url)
     (fetch-buglist . org-sync-forge-fetch-buglist)
     (send-buglist  . org-sync-forge-send-buglist))
   "Forge backend.")
+
+(defun org-sync-forge-time-to-string (time)
+  "Return TIME as a full ISO 8601 date string, but without timezone adjustments (which forge doesn't support"
+  (format-time-string "%Y-%m-%dT%TZ" time t))
 
 (defun org-sync-github-base-url (url)
   "Return base url from given url URL."
