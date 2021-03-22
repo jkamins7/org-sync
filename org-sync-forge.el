@@ -34,9 +34,7 @@
 ;;; Code:
 
 (require 'cl-lib)
-;(require 'url)
 (require 'org-sync)
-(require 'json)
 
 (defvar org-sync-forge-backend
   '((base-url      . org-sync-forge-base-url)
@@ -120,6 +118,7 @@
 
       (when (stringp err)
 	(error "Github: %s" err))))
+  )
   )
 
 (provide 'org-sync-forge)
