@@ -58,7 +58,7 @@
      id,
      author,
      assignees,
-     status,
+     state,
      title,
      note,
      milestone,
