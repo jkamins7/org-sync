@@ -85,18 +85,29 @@
 
 (defun org-sync-forge-sql-result-to-bug (sql-result)
   "Turn a single row of the forge SQL-RESULT into a bug."
-  (let* (keys (:id
-	       :author
-	       :assignee
-	       :status
-	       :title
-	       :desc
-	       :milestone
-	       :tags
-	       ; :date-deadline
-	       :date-creation
-	       :date-modification))
-    (reduce 'append (mapcar* 'list keys sql-result))
+;;  (let* (keys (:id
+;;	       :author
+;;	       :assignee
+;;	       :status
+;;	       :title
+;;	       :desc
+;;	       :milestone
+;;	       :tags
+;;	       ; :date-deadline
+;;	       :date-creation
+;;	       :date-modification))
+;;    (reduce 'append (mapcar* 'list keys sql-result))
+    (list
+     :id (nth 0 sql-result)
+     :author (nth 1 sql-result)
+     :assignee (nth 2 sql-result)
+     :status (nth 3 sql-result)
+     :title (nth 4 sql-result)
+     :desc (nth 5 sql-result)
+     :milestone (nth 6 sql-result)
+     :tags (nth 7 sql-result)
+     :date-creation (nth 8 sql-result)
+     :date-modification (nth 9 sql-result)
     )
   )
 
