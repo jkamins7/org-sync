@@ -637,13 +637,13 @@ If KEY is already equal to VAL, no change is made."
       (catch :exit
         (mapc (lambda (x)
                 (let ((current-id (org-sync-get-prop :id x)))
-                  (when (and (numberp current-id) (= current-id id))
+                  (when (equal current-id id)
                     (throw :exit x))))
               (org-sync-get-prop :bugs buglist))
         nil)))
 
 (defun org-sync-buglist-dups (buglist)
-  "Return non-nil if BUGLIST contains bugs with the same id.
+  "Return non-nil if the BUGLIST contains bugs with the same id.
 The value returned is a list of duplicated ids."
 
   (let ((hash (make-hash-table :test `equal))
