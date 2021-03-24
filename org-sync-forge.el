@@ -160,11 +160,11 @@
 (defun org-sync-forge-update-bug (new-bug existing-bug url)
   "Update an EXISTING-BUG with new data from a NEW-BUG storing results in URL."
   (let* (
-	 (.title (org-sync-get-prop :title bug))
-	 (.body (org-sync-get-prop :desc bug))
-	 (.labels (org-sync-get-prop :tags bug))
-	 (.assignees (org-sync-get-prop :assignee bug))
-	 (.state (org-sync-get-prop :status bug))
+	 (.title (org-sync-get-prop :title new-bug))
+	 (.body (org-sync-get-prop :desc new-bug))
+	 (.labels (org-sync-get-prop :tags new-bug))
+	 (.assignees (org-sync-get-prop :assignee new-bug))
+	 (.state (org-sync-get-prop :status new-bug))
 	 )
     (forge--ghub-patch existing-bug "/repos/:owner/:repo/issues/:number"
       `((title . , .title)
