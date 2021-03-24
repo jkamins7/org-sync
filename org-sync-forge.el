@@ -150,7 +150,7 @@
 	,@(and .assignees    (list (cons 'assignees    .assignees)))
 					;,@(and .state    (list (cons 'state    .state)))
 	)
-      :callback  (forge--post-submit-callback)
+      ;; :callback  (forge--post-submit-callback)
       :errorback (forge--post-submit-errorback)
       )
     ))
