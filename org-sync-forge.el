@@ -143,16 +143,17 @@
 	 (.assignees (org-sync-get-prop :assignee bug))
 	 (.state (org-sync-get-prop :status bug))
 	 )
-  (forge--ghub-post (forge-get-repository (org-sync-forge-parse-url url)) "/repos/:owner/:repo/issues"
-    `((title . , .title)
-      (body  . , .body)
+    (forge--ghub-post (forge-get-repository (org-sync-forge-parse-url url)) "/repos/:owner/:repo/issues"
+      `((title . , .title)
+	(body  . , .body)
 	,@(and .labels    (list (cons 'labels    .labels)))
 	,@(and .assignees    (list (cons 'assignees    .assignees)))
-	;,@(and .state    (list (cons 'state    .state)))
-	))
+					;,@(and .state    (list (cons 'state    .state)))
+	)
       :callback  (forge--post-submit-callback)
       :errorback (forge--post-submit-errorback)
-  )
+      )
+    ))
 
 (provide 'org-sync-forge)
 ;;; org-sync-forge.el ends here
