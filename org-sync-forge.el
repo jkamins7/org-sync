@@ -166,8 +166,7 @@
 	 (.assignees (replace-unbound-with-nil (org-sync-get-prop :assignee new-bug)))
 	 (.state (replace-unbound-with-nil (org-sync-get-prop :status new-bug)))
 	 )
-    (progn
-      (forge--ghub-patch existing-bug "/repos/:owner/:repo/issues/:number"
+    (forge--ghub-patch existing-bug "/repos/:owner/:repo/issues/:number"
       `((title . , .title)
 	(body  . , .body)
 	,@(and .labels    (list (cons 'labels    .labels)))
@@ -175,13 +174,12 @@
 	)
       :errorback (forge--post-submit-errorback)
       )
-      )
     )
   )
 
 (defun replace-unbound-with-nil (x)
   "Replace X with nil if it is 'unbound."
-  (if (or (equal x '"unbound") (equal x 'unbound))
+  (if (equal x eieio-unbound)
       nil
     x)
   )
