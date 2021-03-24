@@ -160,23 +160,30 @@
 (defun org-sync-forge-update-bug (new-bug existing-bug url)
   "Update an EXISTING-BUG with new data from a NEW-BUG storing results in URL."
   (let* (
-	 (.title (org-sync-get-prop :title new-bug))
-	 (.body (org-sync-get-prop :desc new-bug))
-	 (.labels (org-sync-get-prop :tags new-bug))
-	 (.assignees (org-sync-get-prop :assignee new-bug))
-	 (.state (org-sync-get-prop :status new-bug))
+	 (.title (replace-unbound-with-nil (org-sync-get-prop :title new-bug)))
+	 (.body (replace-unbound-with-nil (org-sync-get-prop :desc new-bug)))
+	 (.labels (replace-unbound-with-nil (org-sync-get-prop :tags new-bug)))
+	 (.assignees (replace-unbound-with-nil (org-sync-get-prop :assignee new-bug)))
+	 (.state (replace-unbound-with-nil (org-sync-get-prop :status new-bug)))
 	 )
-    (forge--ghub-patch existing-bug "/repos/:owner/:repo/issues/:number"
+    (progn
+      (forge--ghub-patch existing-bug "/repos/:owner/:repo/issues/:number"
       `((title . , .title)
 	(body  . , .body)
 	,@(and .labels    (list (cons 'labels    .labels)))
 	,@(and .assignees    (list (cons 'assignees    .assignees)))
-	;;,@(and .state    (list (cons 'state    .state)))
 	)
-      ;; :callback  (forge--post-submit-callback)
       :errorback (forge--post-submit-errorback)
       )
+      )
     )
+  )
+
+(defun replace-unbound-with-nil (x)
+  "Replace X with nil if it is 'unbound."
+  (if (equal x 'unbound)
+      nil
+    x)
   )
 
 (provide 'org-sync-forge)
