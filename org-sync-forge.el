@@ -181,7 +181,7 @@
 
 (defun replace-unbound-with-nil (x)
   "Replace X with nil if it is 'unbound."
-  (if (equal x 'unbound)
+  (if (or (equal x '"unbound") (equal x 'unbound))
       nil
     x)
   )
