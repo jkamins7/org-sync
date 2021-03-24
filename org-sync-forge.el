@@ -158,7 +158,8 @@
     ))
 
 (defun org-sync-forge-update-bug (new-bug existing-bug url)
-  ((let* (
+  "Update an EXISTING-BUG with new data from a NEW-BUG storing results in URL."
+  (let* (
 	 (.title (org-sync-get-prop :title bug))
 	 (.body (org-sync-get-prop :desc bug))
 	 (.labels (org-sync-get-prop :tags bug))
@@ -177,5 +178,6 @@
       )
     )
   )
+
 (provide 'org-sync-forge)
 ;;; org-sync-forge.el ends here
