@@ -136,12 +136,19 @@
 
 (defun org-sync-forge-create-bug (bug url)
   "Create an issue for a forge named URL from a new BUG."
+  (let* (
+	 (.title (org-sync-get-prop :title bug))
+	 (.body (org-sync-get-prop :desc bug))
+	 (.labels (org-sync-get-prop :tags bug))
+	 (.assignees (org-sync-get-prop :assignee bug))
+	 (.state (org-sync-get-prop :status bug))
+	 )
   (forge--ghub-post (forge-get-repository (org-sync-forge-parse-url url)) "/repos/:owner/:repo/issues"
-    `((title . , (org-sync-get-prop :title bug))
-      (body  . , (org-sync-get-prop :desc bug))
-        ,@(and .labels    (org-sync-get-prop :tags bug))
-        ,@(and .assignees (org-sync-get-prop :assignee bug))
-	,@(and .state (org-sync-get-prop :status bug))
+    `((title . , .title)
+      (body  . , .body)
+	,@(and .labels    (list (cons 'labels    .labels)))
+	,@(and .assignees    (list (cons 'assignees    .assignees)))
+	;,@(and .state    (list (cons 'state    .state)))
 	))
       :callback  (forge--post-submit-callback)
       :errorback (forge--post-submit-errorback)
