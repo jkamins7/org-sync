@@ -47,11 +47,21 @@
   "Return TIME as a full ISO 8601 date string, but without timezone adjustments (which forge doesn't support"
   (format-time-string "%Y-%m-%dT%TZ" time t))
 
-(defun org-sync-forge-base-url (url)
+(defun org-sync-forge-parse-url (url)
   "Return base url from given url URL."
   ;; Fix me to actually use a repo name here :
-  "forge-database.sql"
-)
+
+  (when (string-match "forge/\\([^/]+\\)/\\([^/]+\\)/\\([^/]+\\)" url)
+    (let ((host (match-string 1 url))
+	  (user (match-string 2 url))
+          (repo (match-string 3 url)))
+      (list host user repo))))
+
+(defun org-sync-forge-base-url (url)
+  "Return base url from given url URL."
+  (let* ((parsed-url (org-sync-forge-parse-url url)))
+    (when parsed-url parsed-url)))
+
 
 (defun org-sync-forge-sql-query-string ()
   "SELECT
@@ -72,11 +82,11 @@
 (defun org-sync-forge-fetch-buglist (last-update)
   "Return the buglist pulled from forge's database with entries that have changed since LAST-UPDATE."
   (let* ((updated_recently (when last-update
-			     (format " WHERE datetime(substr(issue.updated,2,20)) >= datetime(\"%s\")" (org-sync-forge-time-to-string last-update))))
-	 (sql_query (concat (org-sync-forge-sql-query-string) updated_recently))
-	 (sql_results (forge-sql sql_query))
-	 (title "Issues from forge")
-	 )
+                             (format " WHERE datetime(substr(issue.updated,2,20)) >= datetime(\"%s\")" (org-sync-forge-time-to-string last-update))))
+         (sql_query (concat (org-sync-forge-sql-query-string) updated_recently))
+         (sql_results (forge-sql sql_query))
+         (title "Issues from forge")
+         )
     `(:title ,title
              :url ,org-sync-base-url
              :bugs ,(mapcar 'org-sync-forge-sql-result-to-bug sql_results)
@@ -85,18 +95,6 @@
 
 (defun org-sync-forge-sql-result-to-bug (sql-result)
   "Turn a single row of the forge SQL-RESULT into a bug."
-;;  (let* (keys (:id
-;;	       :author
-;;	       :assignee
-;;	       :status
-;;	       :title
-;;	       :desc
-;;	       :milestone
-;;	       :tags
-;;	       ; :date-deadline
-;;	       :date-creation
-;;	       :date-modification))
-;;    (reduce 'append (mapcar* 'list keys sql-result))
     (list
      :id (nth 0 sql-result)
      :author (nth 1 sql-result)
@@ -114,27 +112,39 @@
 (defun org-sync-forge-send-buglist (buglist)
   "Send a BUGLIST to forge and return new bugs."
   (dolist (b (org-sync-get-prop :bugs buglist))
-    (let* ((sync (org-sync-get-prop :sync b))
-	   (id (org-sync-get-prop :id b))
-	   ; (data (org-sync-forge-bug-to-json b))
-	   ; (modif-url (format "%s/%d" new-url (or id 0)))
-;;	   (result
-;;	    (cond
-;;	     ;; new bug
-;;	     ((null id)
-;;	      (org-sync-forge-handle-tags b existing-tags)
-;;	      (push (org-sync-forge-json-to-bug
-;;		     (org-sync-forge-request "POST" new-url data)) newbugs))
-;;
-;;	     ;; update bug
-;;	     (t
-;;	      (org-sync-forge-handle-tags b existing-tags)
-;;	      (org-sync-forge-request "PATCH" modif-url data))))
-;;	   (err (cdr (assoc 'message result))))
-;;
-;;      (when (stringp err)
-;;	(error "Github: %s" err))))
-  )))
+    (let* ((id (org-sync-get-prop :id b))
+	   (sync (org-sync-get-prop :sync b)))
+      (cond
+       ;; new bug
+       ((null id)
+	(org-sync-forge-create-bug b org-sync-base-url))
+
+       ;; update bug
+       ((forge-get-topic id)
+	(org-sync-forge-update-bug
+	 (org-sync-forge-diff-bugs b (forge-get-topic id))))
+
+       ;; malformed bug
+       (t
+	(error "The id provided does not exist in database"))
+       ))
+
+    ;;      (when (stringp err)
+    ;;        (error "Github: %s" err))))
+    )
+  )
+
+(defun org-sync-forge-create-bug (bug url)
+  "Create an issue for a forge named URL from a new BUG."
+  (forge--ghub-post (forge-get-repository (org-sync-forge-parse-url url)) "/repos/:owner/:repo/issues"
+    `((title . , (org-sync-get-prop :title bug))
+      (body  . , (org-sync-get-prop :desc bug))
+        ,@(and .labels    (org-sync-get-prop :tags bug))
+        ,@(and .assignees (org-sync-get-prop :assignee bug))
+	,@(and .state (org-sync-get-prop :status bug))
+	))
+      :callback  (forge--post-submit-callback)
+      :errorback (forge--post-submit-errorback)))
   )
 
 (provide 'org-sync-forge)
