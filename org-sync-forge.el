@@ -111,9 +111,11 @@
 
 (defun org-sync-forge-send-buglist (buglist)
   "Send a BUGLIST to forge and return new bugs."
+  (let* (newbugs)
   (dolist (b (org-sync-get-prop :bugs buglist))
     (let* ((id (org-sync-get-prop :id b))
-	   (sync (org-sync-get-prop :sync b)))
+	   (sync (org-sync-get-prop :sync b))
+	   )
       (cond
        ;; new bug
        ((null id)
@@ -121,8 +123,7 @@
 
        ;; update bug
        ((forge-get-topic id)
-	(org-sync-forge-update-bug
-	 (org-sync-forge-diff-bugs b (forge-get-topic id))))
+	(org-sync-forge-update-bug b (forge-get-topic id) url))
 
        ;; malformed bug
        (t
@@ -132,6 +133,7 @@
     ;;      (when (stringp err)
     ;;        (error "Github: %s" err))))
     )
+  `(:bugs ,newbugs))
   )
 
 (defun org-sync-forge-create-bug (bug url)
@@ -148,12 +150,32 @@
 	(body  . , .body)
 	,@(and .labels    (list (cons 'labels    .labels)))
 	,@(and .assignees    (list (cons 'assignees    .assignees)))
-					;,@(and .state    (list (cons 'state    .state)))
+	;;,@(and .state    (list (cons 'state    .state)))
 	)
       ;; :callback  (forge--post-submit-callback)
       :errorback (forge--post-submit-errorback)
       )
     ))
 
+(defun org-sync-forge-update-bug (new-bug existing-bug url)
+  ((let* (
+	 (.title (org-sync-get-prop :title bug))
+	 (.body (org-sync-get-prop :desc bug))
+	 (.labels (org-sync-get-prop :tags bug))
+	 (.assignees (org-sync-get-prop :assignee bug))
+	 (.state (org-sync-get-prop :status bug))
+	 )
+    (forge--ghub-patch existing-bug "/repos/:owner/:repo/issues/:number"
+      `((title . , .title)
+	(body  . , .body)
+	,@(and .labels    (list (cons 'labels    .labels)))
+	,@(and .assignees    (list (cons 'assignees    .assignees)))
+	;;,@(and .state    (list (cons 'state    .state)))
+	)
+      ;; :callback  (forge--post-submit-callback)
+      :errorback (forge--post-submit-errorback)
+      )
+    )
+  )
 (provide 'org-sync-forge)
 ;;; org-sync-forge.el ends here
