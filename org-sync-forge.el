@@ -144,7 +144,7 @@
 	,@(and .state (org-sync-get-prop :status bug))
 	))
       :callback  (forge--post-submit-callback)
-      :errorback (forge--post-submit-errorback)))
+      :errorback (forge--post-submit-errorback)
   )
 
 (provide 'org-sync-forge)
