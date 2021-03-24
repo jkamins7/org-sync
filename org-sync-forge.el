@@ -60,7 +60,7 @@
 (defun org-sync-forge-base-url (url)
   "Return base url from given url URL."
   (let* ((parsed-url (org-sync-forge-parse-url url)))
-    (when parsed-url parsed-url)))
+    (when parsed-url (reduce 'concat (append (list "forge") (mapcar (lambda (x) (concat "/" x)) parsed-url))))))
 
 
 (defun org-sync-forge-sql-query-string ()
